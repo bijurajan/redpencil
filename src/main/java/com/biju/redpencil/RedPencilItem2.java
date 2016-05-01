@@ -1,19 +1,26 @@
 package com.biju.redpencil;
 
+import static java.math.BigDecimal.valueOf;
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 import lombok.Data;
 
 @Data
 public class RedPencilItem2 {
+	private static final int PRICE_UPDATE_DAYS_MAX = 30;
+	private static final int PROMOTION_DAYS_MAX = 30;
+	private static final double PERCENT_LOWER_BOUND = 0.05;
+	private static final double PERCENT_UPPER_BOUND = 0.3;
 	
 	private BigDecimal price;
 	private BigDecimal updatedPrice;
 	private LocalDate initialDate;
 	private LocalDate lastUpdatedDate;
+	private boolean isOnPromotion;
 	private LocalDate promotionStartDate;
 	
 	public RedPencilItem2(BigDecimal price, LocalDate initialDate){
@@ -30,6 +37,7 @@ public class RedPencilItem2 {
 			this.updatedPrice = updatedPrice;
 		}
 		if(isOnPromotion()){
+			this.isOnPromotion = true;
 			this.promotionStartDate = this.lastUpdatedDate;
 		}
 	}
@@ -42,26 +50,24 @@ public class RedPencilItem2 {
 	}
 
 	private boolean isNotOnPromotionAndForRunningMoreThan30Days(LocalDate promotionStartDate, LocalDate lastUpdatedDate) {
-		if(promotionStartDate != null){
-			long between = ChronoUnit.DAYS.between(promotionStartDate, lastUpdatedDate);
-			return between <= 30;
+		if(isOnPromotion){
+			return DAYS.between(promotionStartDate, lastUpdatedDate) <= PROMOTION_DAYS_MAX;
 		}
 		return true;
 	}
 
 	private boolean isLastPriceUpdateGreaterThanOrEqualTo30Days(LocalDate initialDate, LocalDate lastUpdatedDate) {
-		long between = ChronoUnit.DAYS.between(initialDate, lastUpdatedDate);
-		return between >= 30;
+		return DAYS.between(initialDate, lastUpdatedDate) >= PRICE_UPDATE_DAYS_MAX;
 	}
 
 	private boolean isPriceReductionLessThanOrEqualTo5Percent(BigDecimal initialPrice, BigDecimal updatedPrice) {
 		BigDecimal percentageDifference = getPercentageDifference(initialPrice, updatedPrice);
-		return percentageDifference.compareTo(BigDecimal.valueOf(0.05)) >= 0;
+		return percentageDifference.compareTo(valueOf(PERCENT_LOWER_BOUND)) >= 0;
 	}
 	
 	private boolean isPriceReductionGreaterThanOrEqualTo30Percent(BigDecimal initialPrice, BigDecimal updatedPrice){
 		BigDecimal percentageDifference = getPercentageDifference(initialPrice,updatedPrice);
-		return percentageDifference.compareTo(BigDecimal.valueOf(0.3)) <= 0;
+		return percentageDifference.compareTo(valueOf(PERCENT_UPPER_BOUND)) <= 0;
 	}
 
 	private BigDecimal getPercentageDifference(BigDecimal initialPrice, BigDecimal updatedPrice) {

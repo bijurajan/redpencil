@@ -36,7 +36,7 @@ public class RedPencilItem2 {
 			this.price = this.updatedPrice;
 			this.updatedPrice = updatedPrice;
 		}
-		if(isOnPromotion()){
+		if(isOnPromotion() && !isOnPromotion){
 			this.isOnPromotion = true;
 			this.promotionStartDate = this.lastUpdatedDate;
 		}

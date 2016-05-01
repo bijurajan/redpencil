@@ -129,4 +129,16 @@ public class RedPencilItem2Test {
 		
 		assertThat(result, is(true));
 	}
+	
+	@Test
+	public void shouldAllowNotPromotionIfPromotionIsProlonged() throws Exception {
+		RedPencilItem2 item = new RedPencilItem2(INITIAL_PRICE_100, TODAY.minusDays(100));
+		item.setUpdatedPrice(new BigDecimal(90), TODAY.minusDays(40));
+		item.setUpdatedPrice(new BigDecimal(80), TODAY.minusDays(20));
+		item.setUpdatedPrice(new BigDecimal(70), TODAY);
+		
+		boolean result = item.isOnPromotion();
+		
+		assertThat(result, is(false));
+	}
 }

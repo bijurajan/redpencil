@@ -21,7 +21,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
 		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(true));
 	}
@@ -32,7 +32,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
 		item.setUpdatedPrice(new Price(new BigDecimal(97), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(false));
 	}
@@ -43,7 +43,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
 		item.setUpdatedPrice(new Price(new BigDecimal(50), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(false));
 	}
@@ -54,7 +54,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
 		item.setUpdatedPrice(new Price(new BigDecimal(95), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(true));
 	}
@@ -65,7 +65,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
 		item.setUpdatedPrice(new Price(new BigDecimal(70), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(true));
 	}
@@ -73,10 +73,10 @@ public class RedPencilItemTest {
 	@Test
 	public void shouldNotAllowPromotionWhenPreviousPriceChangeWasLessThan30Days() throws Exception {
 		BigDecimal initialPrice = new BigDecimal(100);
-		RedPencilItem item = new RedPencilItem(new Price(initialPrice, LocalDate.now().minusDays(20)));
+		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(20)));
 		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(false));
 	}
@@ -87,7 +87,7 @@ public class RedPencilItemTest {
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(30)));
 		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(true));
 	}
@@ -98,20 +98,34 @@ public class RedPencilItemTest {
 	@Test
 	public void shouldThrowExceptionIfPromotionCheckIsDoneWithoutUpdatedPriceEntered() throws Exception {
 		BigDecimal initialPrice = new BigDecimal(100);
-		RedPencilItem item = new RedPencilItem(new Price(initialPrice, LocalDate.now().minusDays(30)));
+		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(30)));
 		expectedException.expect(RuntimeException.class);
 		expectedException.expectMessage("Updated price needs to be provided before checking promotion");
 		
-		item.isOnPromotion();
+		item.isOnPromotionAfterUpdate();
 	}
 	
 	@Test
 	public void shouldNotAllowPromotionIfPromotionHasBeenRunningForMoreThan30Days() throws Exception {
 		BigDecimal initialPrice = new BigDecimal(100);
-		RedPencilItem item = new RedPencilItem(new Price(initialPrice, LocalDate.now().minusDays(80)));
-		item.setUpdatedPrice(new Price(new BigDecimal(90), LocalDate.now().minusDays(40)));
+		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(80)));
+		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY.minusDays(40)));
+		item.setUpdatedPrice(new Price(new BigDecimal(80), TODAY));
 		
-		boolean result = item.isOnPromotion();
+		boolean result = item.isOnPromotionAfterUpdate();
+		
+		assertThat(result, is(false));
+	}
+	
+	@Test
+	public void shouldNotProlongPromotionIfMultipleUpdatesDone() throws Exception {
+		BigDecimal initialPrice = new BigDecimal(100);
+		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(80)));
+		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY.minusDays(40)));
+		item.setUpdatedPrice(new Price(new BigDecimal(80), TODAY.minusDays(20)));
+		item.setUpdatedPrice(new Price(new BigDecimal(70), TODAY));
+		
+		boolean result = item.isOnPromotionAfterUpdate();
 		
 		assertThat(result, is(false));
 	}

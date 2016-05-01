@@ -22,12 +22,12 @@ public class RedPencilItem {
 	
 	public void setUpdatedPrice(Price updatedPrice){
 		this.updatedPrice = updatedPrice;
-		if(this.isOnPromotion()){
+		if(this.isOnPromotionAfterUpdate() && this.promotionSetDate == null){
 			this.promotionSetDate = updatedPrice.getDate();
 		}
 	}
 	
-	public boolean isOnPromotion() {
+	public boolean isOnPromotionAfterUpdate() {
 		if(updatedPrice == null){
 			throw new RuntimeException(UPDATED_PRICE_NOT_PROVIDED);
 		}
@@ -42,8 +42,8 @@ public class RedPencilItem {
 
 	private boolean isPromotionRunningForLessThanOrEqualTo30Days() {
 		if(promotionSetDate != null){
-			long noOfDaysSincePromotionStart = DAYS.between(promotionSetDate, LocalDate.now());
-			return noOfDaysSincePromotionStart <= PROMOTION_DAYS_LIMIT;
+			long daysSincePromotionStart = DAYS.between(promotionSetDate, updatedPrice.getDate());
+			return daysSincePromotionStart <= PROMOTION_DAYS_LIMIT;
 		}
 		return true;
 	}

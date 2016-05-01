@@ -38,6 +38,18 @@ public class RedPencilItemTest {
 	}
 	
 	@Test
+	public void shouldNotAllowPromotionWhenPriceReductionIsLessThan5PercentForMultipleUpdates() throws Exception {
+		BigDecimal initialPrice = new BigDecimal(100);
+		RedPencilItem item = new RedPencilItem(new Price(initialPrice, TODAY.minusDays(100)));
+		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY.minusDays(20)));
+		item.setUpdatedPrice(new Price(new BigDecimal(90), TODAY));
+		
+		boolean result = item.isOnPromotionAfterUpdate();
+		
+		assertThat(result, is(false));
+	}
+	
+	@Test
 	public void shouldNotAllowPromotionWhenPriceReductionIsMoreThan30Percent() throws Exception {
 		BigDecimal initialPrice = new BigDecimal(100);
 		RedPencilItem item = new RedPencilItem(new Price(initialPrice, FIFTY_DAYS_AGO));
@@ -129,4 +141,5 @@ public class RedPencilItemTest {
 		
 		assertThat(result, is(false));
 	}
+
 }

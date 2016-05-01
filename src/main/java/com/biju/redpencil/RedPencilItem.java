@@ -12,7 +12,7 @@ public class RedPencilItem {
 	private static final double LOWER_BOUND = 0.05;
 	private static final double UPPER_BOUND = 0.3;
 	
-	private final Price initialPrice;
+	private Price initialPrice;
 	private Price updatedPrice;
 	private LocalDate promotionSetDate;
 	
@@ -21,6 +21,10 @@ public class RedPencilItem {
 	}
 	
 	public void setUpdatedPrice(Price updatedPrice){
+		
+		if(updatedPrice != null){
+			
+		}
 		this.updatedPrice = updatedPrice;
 		if(this.isOnPromotionAfterUpdate() && this.promotionSetDate == null){
 			this.promotionSetDate = updatedPrice.getDate();

@@ -141,4 +141,15 @@ public class RedPencilItem2Test {
 		
 		assertThat(result, is(false));
 	}
+	
+	@Test
+	public void shouldStopPromotionIfPriceIsIncreased() throws Exception {
+		RedPencilItem2 item = new RedPencilItem2(INITIAL_PRICE_100, TODAY.minusDays(100));
+		item.setUpdatedPrice(new BigDecimal(90), TODAY.minusDays(20));
+		item.setUpdatedPrice(new BigDecimal(91), TODAY);
+		
+		boolean result = item.isOnPromotion();
+		
+		assertThat(result, is(false));
+	}
 }

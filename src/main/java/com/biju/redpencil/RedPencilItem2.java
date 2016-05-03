@@ -7,10 +7,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.time.LocalDate;
 
-import lombok.Data;
-
-@Data
 public class RedPencilItem2 {
+	private static final String UPDATED_PRICE_NOT_PROVIDED = "Updated price needs to be provided before checking promotion";
 	private static final int PRICE_UPDATE_DAYS_MAX = 30;
 	private static final int PROMOTION_DAYS_MAX = 30;
 	private static final double PERCENT_LOWER_BOUND = 0.05;
@@ -43,6 +41,9 @@ public class RedPencilItem2 {
 	}
 	
 	public boolean isOnPromotion(){
+		if(updatedPrice == null){
+			throw new RuntimeException(UPDATED_PRICE_NOT_PROVIDED);
+		}
 		return isPriceReductionLessThanOrEqualTo5Percent(this.price, this.updatedPrice) &&
 			   isPriceReductionGreaterThanOrEqualTo30Percent(this.price, this.updatedPrice) &&
 			   isLastPriceUpdateGreaterThanOrEqualTo30Days(this.initialDate, this.lastUpdatedDate) &&

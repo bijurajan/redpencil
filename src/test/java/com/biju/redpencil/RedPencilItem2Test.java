@@ -6,7 +6,9 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 
 public class RedPencilItem2Test {
@@ -142,14 +144,15 @@ public class RedPencilItem2Test {
 		assertThat(result, is(false));
 	}
 	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
+	
 	@Test
-	public void shouldStopPromotionIfPriceIsIncreased() throws Exception {
+	public void shouldThrowExceptionIfPromotionCheckIsDoneWithoutUpdatedPriceEntered() throws Exception {
 		RedPencilItem2 item = new RedPencilItem2(INITIAL_PRICE_100, TODAY.minusDays(100));
-		item.setUpdatedPrice(new BigDecimal(90), TODAY.minusDays(20));
-		item.setUpdatedPrice(new BigDecimal(91), TODAY);
+		expectedException.expect(RuntimeException.class);
+		expectedException.expectMessage("Updated price needs to be provided before checking promotion");
 		
-		boolean result = item.isOnPromotion();
-		
-		assertThat(result, is(false));
+		item.isOnPromotion();
 	}
 }
